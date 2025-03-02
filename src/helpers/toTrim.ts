@@ -1,0 +1,1 @@
+export const toTrim = (value: string | undefined): string => value ? value.trim() : '';
