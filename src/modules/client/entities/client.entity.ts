@@ -22,6 +22,9 @@ export class Client {
     @Column({type:'varchar', length:10})
     client_social_number:string;
 
+    @Column({type:'boolean', default:false})
+    client_is_deleted?:boolean;
+
     private removeSpaces(){
         this.client_last_name = toTrim(this.client_last_name); 
         this.client_last_name = toLowerCase(this.client_last_name); 

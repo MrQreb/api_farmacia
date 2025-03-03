@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,9 +17,7 @@ export class ClientService {
   private logger = new Logger('ClientService');
 
   async create(createClientDto: CreateClientDto) {
-
     try {
-
       const client = await this.clientRepository.create({
         ...createClientDto
       })
@@ -30,20 +28,39 @@ export class ClientService {
     }
   }
 
+  //TODO: finish this method with filters
   findAll() {
     return `This action returns all client`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} client`;
+  async findOne(id: number) {
+    const client = await this.clientRepository.findOne({
+      where:{client_id:id}
+    });
+    if(!client) throw new NotFoundException(`client not found`);
+    return client;
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
+  async update(id: number, updateClientDto: UpdateClientDto) {
+    try{
+      const client = await this.clientRepository.preload({
+        ...updateClientDto,
+        client_id:id
+      });      
+      if (!client)  throw new NotFoundException(`client not found`);
+      await this.clientRepository.save(client);
+      return { message: 'client updated successfully' };
+
+    }catch(error){
+      handleDBExceptions(this.logger, error, 'client')
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+  async remove(id: number) {
+    const client = await this.findOne(id);
+    client.client_is_deleted = true;
+    await this.clientRepository.save(client);
+    return {message:`client deleted successfully`};
   }
 
   async deleteAllClients() {
