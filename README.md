@@ -5,6 +5,8 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
+> [!IMPORTANT]
+> Es necesario contar con los siguientes requisitos.
 # Requisitos para iniciar configuración.
 
 - Tener instalado nodejs 22.x.
