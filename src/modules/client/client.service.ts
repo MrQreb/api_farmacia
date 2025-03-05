@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Client } from './entities/client.entity';
 import { Repository } from 'typeorm';
 import { handleDBExceptions } from '@helpers/handleBDExeptions';
+import { PaginationDto } from 'src/examples/pagination-filters.dto';
 
 @Injectable()
 export class ClientService {
@@ -29,8 +30,39 @@ export class ClientService {
   }
 
   //TODO: finish this method with filters
-  findAll() {
-    return `This action returns all client`;
+  async findAll( paginationDto: PaginationDto ) {
+
+    const { 
+      client_birthplace, 
+      client_last_name, 
+      client_name, 
+      client_phone, 
+      client_social_number, 
+      limit = 10, 
+      offset = 0} = paginationDto;
+    
+      const queryBuilder = this.clientRepository.createQueryBuilder('client');
+
+      if (client_birthplace) {
+        queryBuilder.andWhere('client.client_birthplace = :client_birthplace', { client_birthplace });
+      }
+      if (client_last_name) {
+        queryBuilder.andWhere('client.client_last_name = :client_last_name', { client_last_name });
+      }
+      if (client_name) {
+        queryBuilder.andWhere('client.client_name = :client_name', { client_name });
+      }
+      if (client_phone) {
+        queryBuilder.andWhere('client.client_phone = :client_phone', { client_phone });
+      }
+      if (client_social_number) {
+        queryBuilder.andWhere('client.client_social_number = :client_social_number', { client_social_number });
+      }
+    
+      queryBuilder.take(limit).skip(offset);
+    
+      return await queryBuilder.getMany();
+
   }
 
   async findOne(id: number) {
