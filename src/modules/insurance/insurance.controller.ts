@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { InsuranceService } from './insurance.service';
 import { CreateInsuranceDto } from './dto/create-insurance.dto';
 import { UpdateInsuranceDto } from './dto/update-insurance.dto';
+import { FindInsurancesQueryDto } from './dto/find-insurances.dto';
 
 @Controller('insurance')
 export class InsuranceController {
@@ -13,8 +14,8 @@ export class InsuranceController {
   }
 
   @Get()
-  findAll() {
-    return this.insuranceService.findAll();
+  findAll(@Query() findInsurancesQueryDto:FindInsurancesQueryDto) {
+    return this.insuranceService.findAll(findInsurancesQueryDto);
   }
 
   @Get(':id')

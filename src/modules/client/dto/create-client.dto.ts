@@ -1,8 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, Length, Matches } from "class-validator";
+import { Type } from "class-transformer";
+import { IsPositive, IsString, Length, Matches } from "class-validator";
 
 export class CreateClientDto {
-
     @ApiProperty()
     @IsString()
     @Length(5,40)
@@ -30,4 +30,8 @@ export class CreateClientDto {
     @IsString()
     @Length(10,10)
     client_social_number:string;
+
+    @IsPositive()
+    @Type(() => Number)
+    insurance:number;
 }

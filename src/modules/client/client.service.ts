@@ -6,21 +6,25 @@ import { Client } from './entities/client.entity';
 import { Repository } from 'typeorm';
 import { handleDBExceptions } from '@helpers/handleBDExeptions';
 import { PaginationDto } from 'src/examples/pagination-filters.dto';
+import { InsuranceService } from '@modules/insurance/insurance.service';
 
 @Injectable()
 export class ClientService {
 
   constructor(
     @InjectRepository(Client)
-    private readonly clientRepository: Repository<Client>
+    private readonly clientRepository: Repository<Client>,
+    private readonly insuranceService:InsuranceService
   ) { }
 
   private logger = new Logger('ClientService');
 
   async create(createClientDto: CreateClientDto) {
+    const { insurance } = await this.getRelations(createClientDto);
     try {
       const client = await this.clientRepository.create({
-        ...createClientDto
+        ...createClientDto,
+         insurance
       })
       await this.clientRepository.save(client);
       return { message: 'client created successfully' };
@@ -74,10 +78,12 @@ export class ClientService {
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {
+    const { insurance } = await this.getRelations(updateClientDto);
     try{
       const client = await this.clientRepository.preload({
         ...updateClientDto,
-        client_id:id
+        client_id:id,
+        insurance
       });      
       if (!client)  throw new NotFoundException(`client not found`);
       await this.clientRepository.save(client);
@@ -93,6 +99,14 @@ export class ClientService {
     client.client_is_deleted = true;
     await this.clientRepository.save(client);
     return {message:`client deleted successfully`};
+  }
+
+  private async getRelations (dto:CreateClientDto | UpdateClientDto){
+
+    if (!dto.insurance) throw new NotFoundException(`insurance id is missing`);
+    const insurance = await this.insuranceService.findOne(dto.insurance);
+    return{ insurance };
+
   }
 
   async deleteAllClients() {

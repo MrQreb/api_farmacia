@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Insurance } from './entities/insurance.entity';
 import { Repository } from 'typeorm';
 import { handleDBExceptions } from '@helpers/handleBDExeptions';
+import { FindInsurancesQueryDto } from './dto/find-insurances.dto';
 
 @Injectable()
 export class InsuranceService {
@@ -29,9 +30,20 @@ export class InsuranceService {
     }
   }
 
-  //TODO: finish insurance methot with filters
-  findAll() {
-    return `This action returns all insurance`;
+  async findAll(findInsurancesQueryDto: FindInsurancesQueryDto) {
+    const { insurance, limit = 10, offset = 0 } = findInsurancesQueryDto;
+
+    const queryBuilder = this.insuranceRepository.createQueryBuilder('insurance')
+      .take(limit)
+      .skip(offset)
+
+    if (insurance) {
+      queryBuilder.andWhere(`insurance.insurance_name ILIKE :insurance`, { insurance: `%${insurance}%` })
+    }
+    const insurances = await queryBuilder.getMany();
+
+    if (!insurances || insurances.length === 0) throw new NotFoundException(`insurances not found`);
+    return insurances;
   }
 
   async findOne(id: number) {
@@ -65,5 +77,5 @@ export class InsuranceService {
     return { message: 'deleted successfully insurance' }
 
   }
-  
+
 }
