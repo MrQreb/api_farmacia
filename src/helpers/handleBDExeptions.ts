@@ -8,6 +8,6 @@ export function handleDBExceptions(logger: Logger, error: any, entity: string): 
     logger.error(`error_code: ${error.code} message:${error.message}`);
     logger.error(`entity:${entity}`);
 
-    if (isNotUniqueName && entity === 'company') throw new ConflictException(`company already exists`);
+    if(isNotUniqueName && entity === 'insurance') throw new ConflictException(`insurance already exists`);
     throw new BadRequestException('database error');
 }
