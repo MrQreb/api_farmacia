@@ -1,6 +1,7 @@
 import { toLowerCase } from "@helpers/toLowerCase";
 import { toTrim } from "@helpers/toTrim";
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Insurance } from "@modules/insurance/entities/insurance.entity";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Client {
@@ -43,4 +44,11 @@ export class Client {
     removeSpacesBeforeUpdate(){
         this.removeSpaces();
     }
+
+    @JoinColumn()
+    @OneToOne(
+     () => Insurance,
+     insurance => insurance.client
+    )
+    insurance: Insurance;
 }

@@ -9,6 +9,7 @@ import { Insurance } from './entities/insurance.entity';
   providers: [InsuranceService],
   imports:[ 
     TypeOrmModule.forFeature([Insurance]), 
-  ]
+  ],
+  exports:[InsuranceService]
 })
 export class InsuranceModule {}
